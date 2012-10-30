@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>RC - The Remote Console Logger</title>
+        <style>body {font-family: "Courier"; font-size: 11px}</style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="http://static.tambur.io/tambur.js"></script>
+        <script src="http://static.tambur.io/tambur_pub.min.js"></script>
+        <script>
+            var APIKEY = "";
+            var APPID = "";
+            var SECRET = "";
+
+            function get_access_token(connection, stream_name, nickname) {
+                var publisher = new tambur.Publisher(connection, SECRET);
+                return publisher.generate_direct_token(stream_name, nickname)
+            }
+
+            function setup_stream(connection, stream_name, nickname) {
+                var stream = connection.get_stream(stream_name);
+                stream.ready = function() {
+                    stream.enable_direct(nickname, get_access_token(connection, stream_name, nickname));
+                    stream.ondirect = onmessage;
+                }
+            }
+
+            function onmessage(msg) {
+                msg = JSON.parse(msg[1])
+                var level = msg[0];
+                var log = msg[1];
+
+                if (level === "log") {
+                    $("#log").append("<span style='color:black'>LOG:</span> "+ log + "<br />");
+                }
+                if (level === "error") {
+                    $("#log").append("<span style='color:red'>ERR:</span> "+ log + "<br />");
+                }
+                if (level === "debug") {
+                    $("#log").append("<span style='color:orange'>DBG:</span> "+ log + "<br />");
+                }
+            }
+
+            $(document).ready(function() {
+                var conn = new tambur.Connection(APIKEY, APPID);
+                conn.ready = function() {
+                    var names = ["log", "error", "debug"];
+                    for (var i=0; i<3; i++) {
+                        setup_stream(conn, names[i], "remote_console");
+                    }
+                };
+            });
+        </script>
+
+    </head>
+    <body>
+        <div id="log"></div>
+    </body>
+</html>
