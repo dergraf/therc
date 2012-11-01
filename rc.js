@@ -57,7 +57,11 @@
     };
 
     RemoteLogger.prototype.log = function(level, args) {
-      return this.streams[level].direct_msg("remote_console", JSON.stringify([level, args]));
+      try {
+        return this.streams[level].direct_msg("remote_console", JSON.stringify([level, args]));
+      } catch (error) {
+        return this.last_error = error;
+      }
     };
 
     RemoteLogger.prototype.fetch_js = function(url, success_callback, error_callback) {

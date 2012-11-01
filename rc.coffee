@@ -28,7 +28,10 @@ class RemoteLogger
                     @ready()
 
     log: (level, args) ->
-        @streams[level].direct_msg("remote_console", JSON.stringify([level, args]))
+        try
+            @streams[level].direct_msg("remote_console", JSON.stringify([level, args]))
+        catch error
+            @last_error = error
 
 
     fetch_js: (url, success_callback, error_callback) ->
