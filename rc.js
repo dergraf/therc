@@ -13,7 +13,7 @@
       this.secret = secret;
       this.ready = ready;
       proto = document.location.protocol === "file:" ? "http:" : document.location.protocol;
-      this.fetch_js("https://raw.github.com/tamburio/tambur.js/master/out/tambur.js", function() {
+      this.fetch_js("" + proto + "//static.tambur.io/tambur.min.js", function() {
         return _this.fetch_js("" + proto + "//static.tambur.io/tambur_pub.min.js", function() {
           var name, nick, _i, _len, _ref, _results;
           if (!_this.conn) {
